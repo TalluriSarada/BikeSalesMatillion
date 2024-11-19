@@ -1,0 +1,8 @@
+type: transformation
+version: "1.0"
+pipeline:
+  components: {}
+  variables: {}
+design:
+  components: {}
+  notes: {}

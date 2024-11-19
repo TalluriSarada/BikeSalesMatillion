@@ -1,0 +1,81 @@
+type: "orchestration"
+version: "1.0"
+pipeline:
+  components:
+    Start:
+      type: "start"
+      transitions:
+        unconditional:
+        - "Landing_TableLoad"
+      parameters:
+        componentName: "Start"
+    Landing_TableLoad:
+      type: "sql-script"
+      parameters:
+        componentName: "Landing_TableLoad"
+        sqlScript: "COPY INTO ${EV_SNOWFLAKE_DATABASE}.${EV_SNOWFLAKE_SCHEMA}.${JV_TARGET_TABLE_NAME}(${JV_COLUMN_LIST})\r\
+          \nFROM @${JV_STAGE_PATH}/${JV_FILE_PATH}/\r\nFILES = ('${JV_FILE_NAME}')\r\
+          \nFILE_FORMAT = (\r\n\t\tTYPE= CSV\r\n\t\tFIELD_DELIMITER=','\r\n\t\tRECORD_DELIMITER='\\\
+          n'\r\n\t\tSKIP_HEADER = 1\r\n\t\tFIELD_OPTIONALLY_ENCLOSED_BY = '\"'\r\n\
+          \t\tNULL_IF = ('')\r\n\t\tENCODING = 'WINDOWS-1252'\r\n                )\r\
+          \nON_ERROR = ABORT_STATEMENT\r\nPURGE=FALSE\r\nFORCE=TRUE\r\n"
+  variables:
+    JV_FILE_PATH:
+      metadata:
+        type: "TEXT"
+        description: ""
+        scope: "SHARED"
+        visibility: "PUBLIC"
+      defaultValue: "FILES"
+    JV_TARGET_TABLE_NAME:
+      metadata:
+        type: "TEXT"
+        description: ""
+        scope: "SHARED"
+        visibility: "PUBLIC"
+      defaultValue: "SALESORDER"
+    JV_FILE_NAME:
+      metadata:
+        type: "TEXT"
+        description: ""
+        scope: "SHARED"
+        visibility: "PUBLIC"
+      defaultValue: "SalesOrders.csv"
+    JV_COLUMN_LIST:
+      metadata:
+        type: "TEXT"
+        description: ""
+        scope: "SHARED"
+        visibility: "PUBLIC"
+      defaultValue: "SALESORDERID,CREATEDBY,CREATEDAT,CHANGEDBY,CHANGEDAT,FISCVARIANT,FISCALYEARPERIOD,NOTEID,PARTNERID,SALESORG,CURRENCY,GROSSAMOUNT,NETAMOUNT,TAXAMOUNT,LIFECYCLESTATUS,BILLINGSTATUS,DELIVERYSTATUS"
+    JV_STAGE_PATH:
+      metadata:
+        type: "TEXT"
+        description: ""
+        scope: "SHARED"
+        visibility: "PUBLIC"
+      defaultValue: "LANDING.BIKESALES"
+design:
+  components:
+    Start:
+      position:
+        x: -980
+        "y": 40
+      tempMetlId: 1
+    Landing_TableLoad:
+      position:
+        x: -820
+        "y": 40
+      tempMetlId: 2
+  notes:
+    "1":
+      position:
+        x: -480
+        "y": 110
+      size:
+        height: 78
+        width: 440
+      theme: "green"
+      content: |
+        This Job Truncates the Target table and Load data into tables.
+        This job uses Project Variable and Pipeline variables.

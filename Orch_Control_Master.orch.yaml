@@ -1,0 +1,159 @@
+type: "orchestration"
+version: "1.0"
+pipeline:
+  components:
+    Start:
+      type: "start"
+      transitions:
+        unconditional:
+        - "Query Result To Grid"
+      parameters:
+        componentName: "Start"
+    Run Orch_Create_Landing_TableLoads:
+      type: "run-orchestration"
+      parameters:
+        componentName: "Run Orch_Create_Landing_TableLoads"
+        orchestrationJob: "Orch_Create_Landing_TableLoads"
+        setScalarVariables:
+        - - "JV_STAGE_PATH"
+          - "${JV_MASTER_STAGE_PATH}"
+        - - "JV_FILE_PATH"
+          - "${JV_MASTER_FILE_PATH}"
+        - - "JV_FILE_NAME"
+          - "${JV_MASTER_FILE_NAME}"
+        - - "JV_TARGET_TABLE_NAME"
+          - "${JV_MASTER_TARGET_TABLE_NAME}"
+        - - "JV_COLUMN_LIST"
+          - "${JV_MASTER_COLUMN_LIST}"
+        setGridVariables:
+    Query Result To Grid:
+      type: "query-to-grid"
+      transitions:
+        unconditional:
+        - "Grid Iterator"
+      parameters:
+        componentName: "Query Result To Grid"
+        mode: "Advanced"
+        gridVariable: "GV_LANDING_CONTROL"
+        gridVariableMapping:
+        - - "STAGE_PATH"
+          - "GV_STAGE_PATH"
+        - - "FILE_PATH"
+          - "GV_FILE_PATH"
+        - - "FILE_NAME"
+          - "GV_FILE_NAME"
+        - - "TARGET_TABLE_NAME"
+          - "GV_TARGET_TABLE_NAME"
+        - - "COLUMN_LIST"
+          - "GV_COLUMN_LIST"
+        query: "SELECT\r\n    JOB_ID,\r\n    STAGE_PATH,\r\n    FILE_PATH, \r\n  \
+          \  FILE_NAME,\r\n    TARGET_TABLE_NAME,\r\n    COLUMN_LIST\r\nFROM ${EV_SNOWFLAKE_DATABASE}.${EV_SNOWFLAKE_SCHEMA}.BIKESALES_LANDING_LOAD_CONTROL\r\
+          \nORDER BY JOB_ID ASC"
+    Grid Iterator:
+      type: "grid-iterator"
+      iterationTarget: "Run Orch_Create_Landing_TableLoads"
+      parameters:
+        componentName: "Grid Iterator"
+        gridVariable: "GV_LANDING_CONTROL"
+        gridIteratorVariableMapping:
+        - - "GV_STAGE_PATH"
+          - "JV_MASTER_STAGE_PATH"
+        - - "GV_FILE_PATH"
+          - "JV_MASTER_FILE_PATH"
+        - - "GV_FILE_NAME"
+          - "JV_MASTER_FILE_NAME"
+        - - "GV_TARGET_TABLE_NAME"
+          - "JV_MASTER_TARGET_TABLE_NAME"
+        - - "GV_COLUMN_LIST"
+          - "JV_MASTER_COLUMN_LIST"
+        breakOnFailure: "No"
+        concurrency: "Sequential"
+  variables:
+    JV_MASTER_FILE_PATH:
+      metadata:
+        type: "TEXT"
+        description: ""
+        scope: "SHARED"
+        visibility: "PUBLIC"
+      defaultValue: "FILES"
+    JV_MASTER_STAGE_PATH:
+      metadata:
+        type: "TEXT"
+        description: ""
+        scope: "SHARED"
+        visibility: "PUBLIC"
+      defaultValue: "LANDING.BIKESALES"
+    JV_MASTER_COLUMN_LIST:
+      metadata:
+        type: "TEXT"
+        description: ""
+        scope: "SHARED"
+        visibility: "PUBLIC"
+      defaultValue: "SALESORDERID,CREATEDBY,CREATEDAT,CHANGEDBY,CHANGEDAT,FISCVARIANT,FISCALYEARPERIOD,NOTEID,PARTNERID,SALESORG,CURRENCY,GROSSAMOUNT,NETAMOUNT,TAXAMOUNT,LIFECYCLESTATUS,BILLINGSTATUS,DELIVERYSTATUS"
+    JV_MASTER_TARGET_TABLE_NAME:
+      metadata:
+        type: "TEXT"
+        description: ""
+        scope: "SHARED"
+        visibility: "PUBLIC"
+      defaultValue: "SALESORDER"
+    JV_MASTER_FILE_NAME:
+      metadata:
+        type: "TEXT"
+        description: ""
+        scope: "SHARED"
+        visibility: "PUBLIC"
+      defaultValue: "SalesOrders.csv"
+    JV_MASTER_THRESHOLD_VALUE:
+      metadata:
+        type: "NUMBER"
+        description: ""
+        scope: "SHARED"
+        visibility: "PUBLIC"
+      defaultValue: "1000000"
+    GV_LANDING_CONTROL:
+      metadata:
+        type: "GRID"
+        description: ""
+        scope: "SHARED"
+        visibility: "PUBLIC"
+        columns:
+          GV_STAGE_PATH:
+            columnType: "TEXT"
+          GV_FILE_PATH:
+            columnType: "TEXT"
+          GV_FILE_NAME:
+            columnType: "TEXT"
+          GV_TARGET_TABLE_NAME:
+            columnType: "TEXT"
+          GV_COLUMN_LIST:
+            columnType: "TEXT"
+      defaultValue:
+      - - "LANDING.BIKESALES"
+        - "FILES"
+        - "SalesOrders.csv"
+        - "SALESORDER"
+        - "SALESORDERID, \t\t\t\tCREATEDBY,CREATEDAT,CHANGEDBY,CHANGEDAT,FISCVARIANT,FISCALYEARPERIOD,NOTEID,PARTNERID,\
+          \ \t\t\t\tSALESORG,CURRENCY,GROSSAMOUNT,NETAMOUNT,TAXAMOUNT,LIFECYCLESTATUS,BILLINGSTATUS,DELIVERYSTATUS"
+design:
+  components:
+    Start:
+      position:
+        x: -500
+        "y": 0
+      tempMetlId: 1
+    Run Orch_Create_Landing_TableLoads:
+      position:
+        x: -100
+        "y": -10
+      tempMetlId: 2
+    Query Result To Grid:
+      position:
+        x: -320
+        "y": 0
+      tempMetlId: 3
+    Grid Iterator:
+      position:
+        x: -100
+        "y": -10
+      tempMetlId: 4

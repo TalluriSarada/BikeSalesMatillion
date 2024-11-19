@@ -1,0 +1,175 @@
+type: "orchestration"
+version: "1.0"
+pipeline:
+  components:
+    Start:
+      type: "start"
+      transitions:
+        unconditional:
+        - "SALESORDERS"
+        - "SALESORDERITEMS"
+        - "EMPLOYEES"
+      parameters:
+        componentName: "Start"
+    SALESORDERS:
+      type: "sql-script"
+      transitions:
+        unconditional:
+        - "PRODUCTS"
+      parameters:
+        componentName: "SALESORDERS"
+        sqlScript: "CREATE OR REPLACE TABLE ${EV_SNOWFLAKE_DATABASE}.${EV_SNOWFLAKE_SCHEMA}.SALESORDER\r\
+          \n(       SALESORDERID VARCHAR,\r\n        CREATEDBY VARCHAR,\r\n      \
+          \  CREATEDAT VARCHAR,\r\n        CHANGEDBY VARCHAR,\r\n        CHANGEDAT\
+          \ VARCHAR,\r\n        FISCVARIANT VARCHAR,\r\n        FISCALYEARPERIOD VARCHAR,\r\
+          \n        NOTEID VARCHAR,\r\n        PARTNERID VARCHAR,\r\n        SALESORG\
+          \ VARCHAR,\r\n        CURRENCY VARCHAR,\r\n        GROSSAMOUNT VARCHAR,\r\
+          \n        NETAMOUNT VARCHAR,\r\n        TAXAMOUNT VARCHAR,\r\n        LIFECYCLESTATUS\
+          \ VARCHAR,\r\n        BILLINGSTATUS VARCHAR,\r\n        DELIVERYSTATUS VARCHAR,\r\
+          \n        LOAD_TIMESTAMP TIMESTAMP_NTZ(9) DEFAULT CURRENT_TIMESTAMP()\r\n\
+          );\r\n\r\n\r\n"
+    PRODUCTS:
+      type: "sql-script"
+      transitions:
+        unconditional:
+        - "BUSINESSPARTNERS"
+      parameters:
+        componentName: "PRODUCTS"
+        sqlScript: "CREATE OR REPLACE TABLE ${EV_SNOWFLAKE_DATABASE}.${EV_SNOWFLAKE_SCHEMA}.PRODUCTS\r\
+          \n(\t\r\nPRODUCTID VARCHAR,\r\nTYPECODE VARCHAR,\r\nPRODCATEGORYID VARCHAR,\r\
+          \nCREATEDBY VARCHAR,\r\nCREATEDAT VARCHAR,\r\nCHANGEDBY VARCHAR,\r\nCHANGEDAT\
+          \ VARCHAR,\r\nSUPPLIER_PARTNERID VARCHAR,\r\nTAXTARIFFCODE VARCHAR,\r\n\
+          QUANTITYUNIT VARCHAR,\r\nWEIGHTMEASURE VARCHAR,\r\nWEIGHTUNIT VARCHAR,\r\
+          \nCURRENCY VARCHAR,\r\nPRICE VARCHAR,\r\nWIDTH VARCHAR,\r\nDEPTH VARCHAR,\r\
+          \nHEIGHT VARCHAR,\r\nDIMENSIONUNIT VARCHAR,\r\nPRODUCTPICURL VARCHAR,\r\n\
+          LOAD_TIMESTAMP TIMESTAMP_NTZ(9) DEFAULT CURRENT_TIMESTAMP()\r\n);"
+    BUSINESSPARTNERS:
+      type: "sql-script"
+      parameters:
+        componentName: "BUSINESSPARTNERS"
+        sqlScript: "CREATE OR REPLACE TABLE ${EV_SNOWFLAKE_DATABASE}.${EV_SNOWFLAKE_SCHEMA}.BUSINESSPARTENRS\r\
+          \n(\r\nPARTNERID VARCHAR,\r\nPARTNERROLE VARCHAR,\r\nEMAILADDRESS VARCHAR,\r\
+          \nPHONENUMBER VARCHAR,\r\nFAXNUMBER VARCHAR,\r\nWEBADDRESS VARCHAR,\r\n\
+          ADDRESSID VARCHAR,\r\nCOMPANYNAME VARCHAR,\r\nLEGALFORM VARCHAR,\r\nCREATEDBY\
+          \ VARCHAR,\r\nCREATEDAT VARCHAR,\r\nCHANGEDBY VARCHAR,\r\nCHANGEDAT VARCHAR,\r\
+          \nCURRENCY VARCHAR,\r\nLOAD_TIMESTAMP TIMESTAMP_NTZ(9) DEFAULT CURRENT_TIMESTAMP()\r\
+          \n);\r\n"
+    SALESORDERITEMS:
+      type: "sql-script"
+      transitions:
+        unconditional:
+        - "PRODUCTCATEGORIES"
+      parameters:
+        componentName: "SALESORDERITEMS"
+        sqlScript: "CREATE OR REPLACE TABLE ${EV_SNOWFLAKE_DATABASE}.${EV_SNOWFLAKE_SCHEMA}.SALESORDERITEMS\r\
+          \n(\r\nSALESORDERID VARCHAR,\r\nSALESORDERITEM VARCHAR,\r\nPRODUCTID VARCHAR,\r\
+          \nNOTEID VARCHAR,\r\nCURRENCY VARCHAR,\r\nGROSSAMOUNT VARCHAR,\r\nNETAMOUNT\
+          \ VARCHAR,\r\nTAXAMOUNT VARCHAR,\r\nITEMATPSTATUS VARCHAR,\r\nOPITEMPOS\
+          \ VARCHAR,\r\nQUANTITY VARCHAR,\r\nQUANTITYUNIT VARCHAR,\r\nDELIVERYDATE\
+          \ VARCHAR,\r\nLOAD_TIMESTAMP TIMESTAMP_NTZ(9) DEFAULT CURRENT_TIMESTAMP()\r\
+          \n);\r\n\r\n\r\n"
+    PRODUCTCATEGORIES:
+      type: "sql-script"
+      transitions:
+        unconditional:
+        - "PRODUCTCATEGORYTEXTS"
+      parameters:
+        componentName: "PRODUCTCATEGORIES"
+        sqlScript: "CREATE OR REPLACE TABLE ${EV_SNOWFLAKE_DATABASE}.${EV_SNOWFLAKE_SCHEMA}.PRODUCTCATEGORIES\r\
+          \n(\r\nPRODCATEGORYID VARCHAR,\r\nCREATEDBY VARCHAR,\r\nCREATEDAT VARCHAR,\r\
+          \nLOAD_TIMESTAMP TIMESTAMP_NTZ(9) DEFAULT CURRENT_TIMESTAMP()\r\n);"
+    PRODUCTCATEGORYTEXTS:
+      type: "sql-script"
+      parameters:
+        componentName: "PRODUCTCATEGORYTEXTS"
+        sqlScript: "CREATE OR REPLACE TABLE ${EV_SNOWFLAKE_DATABASE}.${EV_SNOWFLAKE_SCHEMA}.PRODUCTCATEGORYTEXTS\r\
+          \n(\r\nPRODCATEGORYID VARCHAR,\r\nLANGUAGE VARCHAR,\r\nSHORT_DESCR VARCHAR,\r\
+          \nMEDIUM_DESCR VARCHAR,\r\nLONG_DESCR VARCHAR,\r\nLOAD_TIMESTAMP TIMESTAMP_NTZ(9)\
+          \ DEFAULT CURRENT_TIMESTAMP()\r\n);"
+    EMPLOYEES:
+      type: "sql-script"
+      transitions:
+        unconditional:
+        - "PRODUCTTEXTS"
+      parameters:
+        componentName: "EMPLOYEES"
+        sqlScript: "CREATE OR REPLACE TABLE ${EV_SNOWFLAKE_DATABASE}.${EV_SNOWFLAKE_SCHEMA}.EMPLOYEES\r\
+          \n(\r\nEMPLOYEEID VARCHAR,\r\nNAME_FIRST VARCHAR,\r\nNAME_MIDDLE VARCHAR,\r\
+          \nNAME_LAST VARCHAR,\r\nNAME_INITIALS VARCHAR,\r\nSEX VARCHAR,\r\nLANGUAGE\
+          \ VARCHAR,\r\nPHONENUMBER VARCHAR,\r\nEMAILADDRESS VARCHAR,\r\nLOGINNAME\
+          \ VARCHAR,\r\nADDRESSID VARCHAR,\r\nVALIDITY_STARTDATE VARCHAR,\r\nVALIDITY_ENDDATE\
+          \ VARCHAR,\r\nLOAD_TIMESTAMP TIMESTAMP_NTZ(9) DEFAULT CURRENT_TIMESTAMP()\r\
+          \n);"
+    PRODUCTTEXTS:
+      type: "sql-script"
+      transitions:
+        unconditional:
+        - "ADDRESSES"
+      parameters:
+        componentName: "PRODUCTTEXTS"
+        sqlScript: "CREATE OR REPLACE TABLE ${EV_SNOWFLAKE_DATABASE}.${EV_SNOWFLAKE_SCHEMA}.PRODUCTTEXTS\r\
+          \n(\r\nPRODUCTID VARCHAR,\r\nLANGUAGE VARCHAR,\r\nSHORT_DESCR VARCHAR,\r\
+          \nMEDIUM_DESCR VARCHAR,\r\nLONG_DESCR VARCHAR,\r\nLOAD_TIMESTAMP TIMESTAMP_NTZ(9)\
+          \ DEFAULT CURRENT_TIMESTAMP()\r\n);"
+    ADDRESSES:
+      type: "sql-script"
+      parameters:
+        componentName: "ADDRESSES"
+        sqlScript: "CREATE OR REPLACE TABLE ${EV_SNOWFLAKE_DATABASE}.${EV_SNOWFLAKE_SCHEMA}.ADDRESSES\r\
+          \n(\r\nADDRESSID VARCHAR,\r\nCITY VARCHAR,\r\nPOSTALCODE VARCHAR,\r\nSTREET\
+          \ VARCHAR,\r\nBUILDING VARCHAR,\r\nCOUNTRY VARCHAR,\r\nREGION VARCHAR,\r\
+          \nADDRESSTYPE VARCHAR,\r\nVALIDITY_STARTDATE VARCHAR,\r\nVALIDITY_ENDDATE\
+          \ VARCHAR,\r\nLATITUDE VARCHAR,\r\nLONGITUDE VARCHAR,\r\nLOAD_TIMESTAMP\
+          \ TIMESTAMP_NTZ(9) DEFAULT CURRENT_TIMESTAMP()\r\n);\r\n\r\n"
+design:
+  components:
+    Start:
+      position:
+        x: -60
+        "y": -20
+      tempMetlId: 1
+    SALESORDERS:
+      position:
+        x: 100
+        "y": -60
+      tempMetlId: 2
+    PRODUCTS:
+      position:
+        x: 260
+        "y": -60
+      tempMetlId: 3
+    BUSINESSPARTNERS:
+      position:
+        x: 430
+        "y": -50
+      tempMetlId: 4
+    SALESORDERITEMS:
+      position:
+        x: 80
+        "y": 30
+      tempMetlId: 5
+    PRODUCTCATEGORIES:
+      position:
+        x: 260
+        "y": 40
+      tempMetlId: 6
+    PRODUCTCATEGORYTEXTS:
+      position:
+        x: 420
+        "y": 30
+      tempMetlId: 7
+    EMPLOYEES:
+      position:
+        x: 70
+        "y": 130
+      tempMetlId: 8
+    PRODUCTTEXTS:
+      position:
+        x: 200
+        "y": 120
+      tempMetlId: 9
+    ADDRESSES:
+      position:
+        x: 340
+        "y": 120
+      tempMetlId: 10

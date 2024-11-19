@@ -1,0 +1,67 @@
+type: "orchestration"
+version: "1.0"
+pipeline:
+  components:
+    Start:
+      type: "start"
+      transitions:
+        unconditional:
+        - "Orch_Create_DataBase"
+      parameters:
+        componentName: "Start"
+    Orch_Create_DataBase:
+      type: "sql-script"
+      transitions:
+        unconditional:
+        - "Orch_Create_Schema"
+      parameters:
+        componentName: "Orch_Create_DataBase"
+        sqlScript: "CREATE OR REPLACE DATABASE TRAINING;"
+    Orch_Create_Schema:
+      type: "sql-script"
+      transitions:
+        unconditional:
+        - "Orch_Create_INTEGRATION"
+      parameters:
+        componentName: "Orch_Create_Schema"
+        sqlScript: "CREATE SCHEMA LANDING;"
+    Orch_Create_INTEGRATION:
+      type: "sql-script"
+      transitions:
+        unconditional:
+        - "Orch_Create_presentation"
+      parameters:
+        componentName: "Orch_Create_INTEGRATION"
+        sqlScript: "CREATE OR REPLACE SCHEMA TRAINING.INTEGRATION;"
+    Orch_Create_presentation:
+      type: "sql-script"
+      parameters:
+        componentName: "Orch_Create_presentation"
+        sqlScript: "CREATE OR REPLACE SCHEMA TRAINING.PRESENTATION;"
+design:
+  components:
+    Start:
+      position:
+        x: -520
+        "y": -30
+      tempMetlId: 1
+    Orch_Create_DataBase:
+      position:
+        x: -390
+        "y": -40
+      tempMetlId: 2
+    Orch_Create_Schema:
+      position:
+        x: -240
+        "y": -40
+      tempMetlId: 3
+    Orch_Create_INTEGRATION:
+      position:
+        x: -120
+        "y": -30
+      tempMetlId: 4
+    Orch_Create_presentation:
+      position:
+        x: 20
+        "y": -60
+      tempMetlId: 5

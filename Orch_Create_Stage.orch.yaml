@@ -1,0 +1,28 @@
+type: "orchestration"
+version: "1.0"
+pipeline:
+  components:
+    Start:
+      type: "start"
+      transitions:
+        unconditional:
+        - "BikeSales"
+      parameters:
+        componentName: "Start"
+    BikeSales:
+      type: "sql-script"
+      parameters:
+        componentName: "BikeSales"
+        sqlScript: "CREATE OR REPLACE STAGE LANDING.BIKESALES;"
+design:
+  components:
+    Start:
+      position:
+        x: 0
+        "y": 0
+      tempMetlId: 1
+    BikeSales:
+      position:
+        x: 130
+        "y": 10
+      tempMetlId: 2

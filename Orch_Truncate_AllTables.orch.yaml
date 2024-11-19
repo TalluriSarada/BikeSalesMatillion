@@ -1,0 +1,40 @@
+type: "orchestration"
+version: "1.0"
+pipeline:
+  components:
+    Start:
+      type: "start"
+      transitions:
+        unconditional:
+        - "Truncate Table"
+      parameters:
+        componentName: "Start"
+    Truncate Table:
+      type: "truncate-table"
+      parameters:
+        componentName: "Truncate Table"
+        warehouse: "${EV_SNOWFLAKE_WAREHOUSE}"
+        database: "${EV_SNOWFLAKE_DATABASE}"
+        schema: "${EV_SNOWFLAKE_SCHEMA}"
+        targetTable:
+        - "ADDRESSES"
+        - "BUSINESSPARTNERS"
+        - "EMPLOYEES"
+        - "PRODUCTCATEGORIES"
+        - "PRODUCTCATEGORYTEXTS"
+        - "PRODUCTS"
+        - "PRODUCTTEXTS"
+        - "SALESORDER"
+        - "SALESORDERITEMS"
+design:
+  components:
+    Start:
+      position:
+        x: -260
+        "y": 0
+      tempMetlId: 1
+    Truncate Table:
+      position:
+        x: -100
+        "y": -10
+      tempMetlId: 2
